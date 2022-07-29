@@ -1,0 +1,7 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      enable: true
+    producer:
+      enable: true
