@@ -28,6 +28,22 @@ class KafkaConsumerConfig(
 ) {
 
     @Bean
+    fun topicKafkaDemo() =
+        TopicBuilder.name("kafka-demo-topic-1")
+            .partitions(1)
+            .replicas(1)
+            .compact()
+            .build()
+
+    @Bean
+    fun topicKafkaDemoDLT() =
+        TopicBuilder.name("kafka-demo-topic-1-dlt")
+            .partitions(1)
+            .replicas(1)
+            .compact()
+            .build()
+
+    @Bean
     fun consumerFactory(): ConsumerFactory<String, Any> {
         val config = mapOf<String, Any>(
             ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapAddress,
@@ -38,27 +54,12 @@ class KafkaConsumerConfig(
     }
 
     @Bean
-    fun concurrentListenerFactory(): ConcurrentKafkaListenerContainerFactory<*, *> {
-        return ConcurrentKafkaListenerContainerFactory<String, String>().apply {
-            this.consumerFactory = consumerFactory()
-        }
+    fun listenerFactory(): ConcurrentKafkaListenerContainerFactory<*, *> {
+        val factory = ConcurrentKafkaListenerContainerFactory<String, Any>()
+        factory.consumerFactory = consumerFactory()
+        factory.setCommonErrorHandler(defaultErrorHandler())
+        return factory
     }
-
-    @Bean
-    fun topic1() =
-        TopicBuilder.name("kafka-demo-topic-1")
-            .partitions(1)
-            .replicas(1)
-            .compact()
-            .build()
-
-    @Bean
-    fun topic1Dlt() =
-        TopicBuilder.name("kafka-demo-topic-1-dlt")
-            .partitions(1)
-            .replicas(1)
-            .compact()
-            .build()
     @Bean
     fun defaultErrorHandler(): DefaultErrorHandler {
         val recovery = DeadLetterPublishingRecoverer(operations()) { cr: ConsumerRecord<*, *>, e: Exception? ->
