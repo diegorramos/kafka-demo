@@ -11,10 +11,10 @@ class DemoListener(
     val kafkaTemplate: KafkaTemplate<String, String>
 ) {
 
-    @PostConstruct
+    /*@PostConstruct
     fun init() {
         kafkaTemplate.send("kafka-demo-topic-1","kafka-demo", "hello world")
-    }
+    }*/
 
     @KafkaListener(topics = ["kafka-demo-topic-1"], groupId = "kafka-demo")
     fun onListener(@Payload message: String) {
